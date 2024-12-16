@@ -1,0 +1,16 @@
+{
+    "name": "belkin/tilda",
+    "description": "Tilda backend easy tasks",
+    "autoload": {
+        "psr-4": {
+            "Belkin\\Tilda\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexandr Belkin",
+            "email": "belkindeveloper@gmail.com"
+        }
+    ],
+    "require": {}
+}

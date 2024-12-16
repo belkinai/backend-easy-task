@@ -1,0 +1,208 @@
+<html lang="ru">
+<head>
+  <title>О нас</title>
+  <style>
+    body {
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        min-height: 100%;
+        padding: 100px;
+        margin: 0;
+        font-family: sans-serif;
+    }
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .header__city-list {
+        display: flex;
+        gap: 24px;
+        margin: 0;
+        padding: 0;
+    }
+    .header__city-list__item {
+        list-style: none;
+    }
+    .header__city-list__item__button {
+        padding: 16px 8px 8px;
+        text-decoration: none;
+        color: black;
+    }
+    .header__city-list__item__button_active {
+        background: #ffadad;
+    }
+    main {
+        flex-grow: 1;
+        padding: 100px 0;
+    }
+    footer {
+        /*flex-grow: 0;*/
+    }
+  </style>
+</head>
+<body>
+<header class="header">
+  <nav class="header__menu">
+    <ul class="header__city-list js-cities">
+      <li class="header__city-list__item">
+        <a
+          href="#msk"
+          class="header__city-list__item__button header__city-list__item__button_active js-city"
+          data-city="msk"
+        >
+          Москва
+        </a>
+      </li>
+      <li class="header__city-list__item">
+        <a
+          href="#samara"
+          class="header__city-list__item__button js-city"
+          data-city="samara"
+        >
+          Самара
+        </a>
+      </li>
+      <li class="header__city-list__item">
+        <a
+          href="#irkutsk"
+          class="header__city-list__item__button js-city"
+          data-city="irkutsk"
+        >
+          Иркутск
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="header__phone js-phone">
+    8-800-DIGITS
+  </div>
+</header>
+<main>
+  <div>
+    Наш дружная команда
+  </div>
+</main>
+<footer class="footer">
+  <div class="footer__phone js-phone">
+    8-800-DIGITS
+  </div>
+</footer>
+
+<script>
+  /**
+   * Хэш города по умолчанию
+   *
+   * @type {string}
+   */
+  const DEFAULT_CITY_SLUG_HASH = '#msk';
+
+  /**
+   * Классы элементов
+   */
+  const SELECTORS = {
+    button: 'js-city',
+    activeButton: 'header__city-list__item__button_active',
+    phone: 'js-phone',
+    citiesList: 'js-cities',
+  };
+
+  /**
+   * Возвращает контактные данные города из источника
+   *
+   * @param {{citySlug: string}} data
+   * @returns {{phone: *}}
+   */
+  function getCityContactData(data) {
+    const defaultCitySlug = 'msk';
+    const cityContactDataSource = {
+      'msk': '8-800-355-35-35',
+      'samara': '8-800-366-36-36',
+      'irkutsk': '8-800-377-37-37',
+    };
+    let { citySlug } = data;
+    if (cityContactDataSource[citySlug] === undefined) {
+      citySlug = defaultCitySlug;
+    }
+    return { phone: cityContactDataSource[citySlug] };
+  }
+
+  /**
+   * Устанавливает класс активности пункту меню
+   *
+   * @param {object} target
+   */
+  function toggleMenuItems(target) {
+    const buttons = document.getElementsByClassName(SELECTORS.button);
+    for (let i = 0; i < buttons.length; i += 1) {
+      buttons[i].classList.remove(SELECTORS.activeButton);
+    }
+    target.classList.add(SELECTORS.activeButton);
+  }
+
+  /**
+   * Изменяет телефон в блоках
+   *
+   * @param {string} phone Телефон
+   */
+  function setPhone(phone) {
+    const phoneElements = document.getElementsByClassName(SELECTORS.phone);
+    for (let i = 0; i < phoneElements.length; i+= 1) {
+      phoneElements[i].innerHTML = phone;
+    }
+
+  }
+
+  /**
+   * Добавляет слушатель меню выбора города
+   */
+  function addCityMenuListener() {
+    const menuList = document.getElementsByClassName(SELECTORS.citiesList);
+    if (menuList.length) {
+      menuList[0].addEventListener('click', (e) => {
+        if (!e.target.classList.contains(SELECTORS.button)) {
+          return;
+        }
+        toggleMenuItems(e.target);
+        const { phone } = getCityContactData({citySlug: e.target.dataset.city});
+        setPhone(phone);
+      });
+    }
+  }
+
+  /**
+   * Обрабатывает хэш из пути, берет из него город
+   * и устанавливает активный город в меню и телефон в блоках контактов
+   */
+  function processHash() {
+    const citySlugHash = location.hash || DEFAULT_CITY_SLUG_HASH;
+    const citySlug = citySlugHash.substring(1);
+    const buttons = document.getElementsByClassName(SELECTORS.button);
+    for (let i = 0; i < buttons.length; i += 1) {
+      const buttonCityName = buttons[i].dataset.city;
+      buttons[i].classList.remove(SELECTORS.activeButton);
+      if (buttonCityName === citySlug) {
+        buttons[i].classList.add(SELECTORS.activeButton);
+      }
+    }
+    const phoneElements = document.getElementsByClassName(SELECTORS.phone);
+    for (let i = 0; i < phoneElements.length; i += 1) {
+      phoneElements[i].innerHTML = citySlug;
+      const { phone } = getCityContactData({ citySlug });
+      setPhone(phone);
+    }
+  }
+
+  /**
+   * Запускает всё
+   */
+  function process() {
+    processHash();
+    addCityMenuListener();
+  }
+
+  process();
+</script>
+</body>
+</html>
